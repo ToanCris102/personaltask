@@ -1,4 +1,3 @@
-from ast import Try
 from django.shortcuts import render
 from rest_framework_simplejwt import tokens
 from rest_framework import generics, response, status, permissions, response, exceptions
@@ -14,10 +13,12 @@ from django.core.mail import send_mail
 from django.conf import settings
 from datetime import date, datetime
 from . import utils
+
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = serializers.RegisterSerializer
-    permission_classes = [permissions.AllowAny]
+    # permission_classes = [permissions.AllowAny]
     def perform_create(self, serializer):
         self.user = serializer.save()        
         
@@ -56,13 +57,15 @@ def ForgotPassword(request):
     try: 
         url = request.data['url']
         email = request.data['email']
-        user = User.objects.get(email=email) 
-        refresh = tokens.RefreshToken.for_user(user)        
+        user = User.objects.get(email=email)
+        print(user)
         day = datetime.now()
         subject = "Token for reset password: " + str(day)
+        refresh = tokens.RefreshToken.for_user(user) 
         token    = str(refresh.access_token)
         to      = email  
         msg_res = utils.my_mail(subject, token, url , to)
+        
         res = {
             'message': msg_res,
             'access': str(refresh.access_token),
@@ -75,24 +78,61 @@ def ForgotPassword(request):
         }
         return response.Response(data=res_err, status=status.HTTP_404_NOT_FOUND)
     
-@api_view(['POST'])
-@permission_classes([permissions.AllowAny])
-def ChangePassword(request):
-    try:
-        email = request.data['email']
-        password = request.data['password']
-        user = User.objects.get(email = email)
-        if user is not None:
-            # User.objects.update(password = password)
-            user.set_password(password)
-        res = {
-            'data': user,
-            'message': "Update your password successfully!!!",
-        }
-        return response.Response(data=res_err, status=status.HTTP_200_OK)
-    except Exception as e:
-        res_err = {
-            'error': e,
-            'message': "Data error or email don't exist!!!",
-        }
-        return response.Response(data=res_err, status=status.HTTP_404_NOT_FOUND)
+# @api_view(['POST'])
+# @permission_classes([permissions.AllowAny])
+# def ChangePassword(request):
+#     try:
+#         email = request.data['email']
+#         password = request.data['password']
+#         user = User.objects.get(email = email)
+#         print(password)
+#         if user is not None:
+#             user.set_password(password)
+#         res = {
+#             'message': "Update your password successfully!!!",
+#         }
+#         return response.Response(data=res, status=status.HTTP_200_OK)
+#     except Exception as e:
+#         res_err = {
+#             'error': e,
+#             'message': "Data error or email don't exist!!!",
+#         }
+#         return response.Response(data=res_err, status=status.HTTP_404_NOT_FOUND)
+    
+class ChangePasswordView(generics.UpdateAPIView):
+        """
+        An endpoint for changing password.
+        """
+        serializer_class = serializers.ChangePasswordSerializer
+        model = User
+        # permission_classes = []
+
+        def get_object(self, queryset=None):
+            obj = self.request.user
+            return obj
+
+        def update(self, request, *args, **kwargs):
+            self.object = self.get_object()
+            serializer = self.get_serializer(data=request.data)
+
+            if serializer.is_valid():
+                # Check old password
+                if not self.object.check_password(serializer.data.get("old_password")):
+                    return response.Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+                # set_password also hashes the password that the user will get
+                self.object.set_password(serializer.data.get("new_password"))
+                
+                self.object.save()
+                refresh = tokens.RefreshToken.for_user(self.object)
+                
+                res = {
+                    'message': 'Password updated successfully',
+                    'token': {
+                        'access': str(refresh.access_token),
+                        'refresh': str(refresh),
+                    }
+                }
+
+                return response.Response(data=res, status=status.HTTP_200_OK)
+
+            return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

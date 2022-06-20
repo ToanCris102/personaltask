@@ -1,12 +1,13 @@
+from urllib import request
 from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics, permissions, response, status
 from . import models
 from . import serializers
 
 class WorkspaceListCreateView(generics.ListCreateAPIView):
     queryset = models.Workspace.objects.all()
     # serializer_class = serializers.WorkspaceWriteSerializer
-    permission_classes = []
+    # permission_classes = [permissions.]
 
     def get_serializer_class(self):
         # return super().get_serializer_class()
@@ -14,11 +15,17 @@ class WorkspaceListCreateView(generics.ListCreateAPIView):
             return serializers.WorkspaceOnlyReadSerializer 
         return serializers.WorkspaceOnlyWriteSerializer
     
+    def get_queryset(self):        
+        self.queryset = models.Workspace.objects.filter(auth_id=self.request.user)
+        return super().get_queryset()
+    
+    def perform_create(self, serializer):        
+        serializer.save(auth_id=self.request.user)
+    
 class WorkspaceDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Workspace.objects.all()
     # serializer_class = serializers.WorkspaceWriteSerializer
-    permission_classes = []
-    # lookup_field = 'workspace_id'
+    # permission_classes = []
     lookup_url_kwarg = 'workspace_id'
     def get_serializer_class(self):        
         if self.request.method == 'GET':
@@ -26,3 +33,7 @@ class WorkspaceDetailView(generics.RetrieveUpdateDestroyAPIView):
         else:
             self.serializer_class = serializers.WorkspaceOnlyWriteSerializer
         return super().get_serializer_class()
+    
+    def get_queryset(self):        
+        self.queryset = models.Workspace.objects.filter(auth_id=self.request.user)
+        return super().get_queryset()

@@ -6,7 +6,7 @@ def my_mail(subject, token, url, to):
     # msg     = "Learn Django at Programink.com"  
     # to      = "hello@programink.com"  
     html = render_to_string('mail_content.html', {"title": subject, "token": token, "url": url})
-    res = send_mail(subject=subject,message="Hello Con ba bay", html_message = html,from_email= settings.EMAIL_HOST_USER, recipient_list=[to, ])  
+    res = send_mail(subject=subject, message="hello", html_message=html, recipient_list=[to,], from_email=settings.EMAIL_HOST_USER )
     if(res == 1):  
         msg = "Mail Sent Successfully."  
     else:  

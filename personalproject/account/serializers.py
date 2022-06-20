@@ -1,5 +1,3 @@
-from asyncore import write
-from pyexpat import model
 from rest_framework import serializers, exceptions
 from django.contrib.auth import get_user_model, authenticate
 User = get_user_model()
@@ -73,4 +71,12 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
         fields= '__all__'
+        
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    class Meta:
+        model = User
+        fields = ['old_password', 'new_password']
+        
     
