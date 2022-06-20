@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from . import models
 
-class WorkspaceWriteSerializer(serializers.ModelSerializer):
+class WorkspaceOnlyWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Workspace
         fields = ['title', 'description', 'url', 'auth_id']
@@ -13,8 +13,9 @@ class WorkspaceWriteSerializer(serializers.ModelSerializer):
             # 'id': {'id': True}
         }
         
-class WorkspaceReadSerializer(serializers.ModelSerializer):
+class WorkspaceOnlyReadSerializer(serializers.ModelSerializer):
+    auth_id = serializers.StringRelatedField()
     class Meta:
         model = models.Workspace
         fields = '__all__'
-        read_only_fields = ["breed_name","owner_email"]
+        read_only_fields = ['title', 'description', 'url', 'auth_id', 'id']

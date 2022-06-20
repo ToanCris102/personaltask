@@ -11,8 +11,8 @@ class WorkspaceListCreateView(generics.ListCreateAPIView):
     def get_serializer_class(self):
         # return super().get_serializer_class()
         if self.request.method == 'GET':
-            return serializers.WorkspaceReadSerializer 
-        return serializers.WorkspaceReadSerializer
+            return serializers.WorkspaceOnlyReadSerializer 
+        return serializers.WorkspaceOnlyWriteSerializer
     
 class WorkspaceDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Workspace.objects.all()
@@ -20,8 +20,9 @@ class WorkspaceDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = []
     # lookup_field = 'workspace_id'
     lookup_url_kwarg = 'workspace_id'
-    def get_serializer_class(self):
-        # return super().get_serializer_class()
+    def get_serializer_class(self):        
         if self.request.method == 'GET':
-            return serializers.WorkspaceReadSerializer 
-        return serializers.WorkspaceReadSerializer
+            self.serializer_class =  serializers.WorkspaceOnlyReadSerializer 
+        else:
+            self.serializer_class = serializers.WorkspaceOnlyWriteSerializer
+        return super().get_serializer_class()

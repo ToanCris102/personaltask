@@ -1,3 +1,4 @@
+from ast import Try
 from django.shortcuts import render
 from rest_framework_simplejwt import tokens
 from rest_framework import generics, response, status, permissions, response, exceptions
@@ -51,7 +52,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
 #         # return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 @api_view(["POST"])
 @permission_classes([permissions.AllowAny])
-def ForgotPasswordView(request):
+def ForgotPassword(request):
     try: 
         url = request.data['url']
         email = request.data['email']
@@ -74,3 +75,24 @@ def ForgotPasswordView(request):
         }
         return response.Response(data=res_err, status=status.HTTP_404_NOT_FOUND)
     
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def ChangePassword(request):
+    try:
+        email = request.data['email']
+        password = request.data['password']
+        user = User.objects.get(email = email)
+        if user is not None:
+            # User.objects.update(password = password)
+            user.set_password(password)
+        res = {
+            'data': user,
+            'message': "Update your password successfully!!!",
+        }
+        return response.Response(data=res_err, status=status.HTTP_200_OK)
+    except Exception as e:
+        res_err = {
+            'error': e,
+            'message': "Data error or email don't exist!!!",
+        }
+        return response.Response(data=res_err, status=status.HTTP_404_NOT_FOUND)
