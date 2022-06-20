@@ -4,7 +4,7 @@ from . import models
 class WorkspaceOnlyWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Workspace
-        fields = ['title', 'description', 'url', ]
+        fields = ['title', 'description', 'url', 'id']
         extra_kwargs = {
             'title': {'write_only': True},
             'description': {'write_only': True},

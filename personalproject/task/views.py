@@ -5,11 +5,11 @@ from . import serializers
 from . import models
 from workspace.models import Workspace
 from django_filters.rest_framework import DjangoFilterBackend
-
+from account.permissions import IsOwnerOrReadOnly
 
 class TaskListCreateView(generics.ListCreateAPIView):
     # serializer_class = serializers.TaskOnlyReadSerializer
-    permission_classes = []
+    permission_classes = [IsOwnerOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     search_fields = ['status_id__status_name', 'name', 'priority_id__priority_name']
     filterset_fields = ['status_id']
@@ -26,7 +26,7 @@ class TaskListCreateView(generics.ListCreateAPIView):
     
     
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = []
+    permission_classes = [IsOwnerOrReadOnly]
     lookup_url_kwarg = 'task_id'
     def get_serializer_class(self):        
         if self.request.method == 'GET':
