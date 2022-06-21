@@ -1,18 +1,13 @@
-from functools import partial
-from urllib import request
 from django.shortcuts import render
 from rest_framework import generics, permissions, response, status
 from . import models
 from . import serializers
-from account.permissions import IsOwnerOrReadOnly
-
-class WorkspaceListCreateView(generics.ListCreateAPIView):
-    # queryset = models.Workspace.objects.all()
-    # serializer_class = serializers.WorkspaceWriteSerializer
-    permission_classes = [IsOwnerOrReadOnly]
-
+from account.permissions import IsOwner
+from .permissions import IsOwnerWorkspace
+class WorkspaceListCreateView(generics.ListCreateAPIView):    
+    permission_classes = [IsOwner, permissions.IsAuthenticated] 
+    # can remove IsOwner because line 16
     def get_serializer_class(self):
-        # return super().get_serializer_class()
         if self.request.method == 'GET':
             return serializers.WorkspaceOnlyReadSerializer 
         return serializers.WorkspaceOnlyWriteSerializer
@@ -25,7 +20,8 @@ class WorkspaceListCreateView(generics.ListCreateAPIView):
         serializer.save(auth_id=self.request.user)
     
 class WorkspaceDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerWorkspace, IsOwner, permissions.IsAuthenticated]
+    # You can remove IsOwnerWorkspace, IsOwner because line 34
     lookup_url_kwarg = 'workspace_id'
     def get_serializer_class(self):        
         if self.request.method == 'GET':

@@ -37,7 +37,7 @@ class MyTokenObtainSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         user = User.objects.filter(email=attrs[self.username_field]).first()
         username = user.username
-        print(user)
+        # print(user)
         if not user:
             raise exceptions.ValidationError('The user is not valid.')
 
@@ -78,5 +78,16 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['old_password', 'new_password']
+        extra_kwargs = {
+            'old_password': {'write_only':True},
+            'new_password': {'write_only':True},
+        }
         
-    
+class ChangePasswordWithToken(serializers.ModelSerializer):
+    new_password = serializers.CharField(required=True)
+    class Meta:
+        model = User
+        fields = ['new_password']
+        extra_kwargs = {
+            'new_password': {'write_only':True},
+        }

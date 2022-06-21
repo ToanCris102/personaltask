@@ -18,7 +18,7 @@ from . import utils
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = serializers.RegisterSerializer
-    # permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.AllowAny]
     def perform_create(self, serializer):
         self.user = serializer.save()        
         
@@ -31,9 +31,9 @@ class RegisterView(generics.CreateAPIView):
         
         return response.Response(data=data_response, status=status.HTTP_201_CREATED)
         
-class MyTokenObtainPairView(TokenObtainPairView):
+class MyTokenObtainPairView(TokenObtainPairView):    
     serializer_class = serializers.MyTokenObtainSerializer
-    
+    permission_classes = [permissions.AllowAny]
 # class ForgotPasswordView(generics.CreateAPIView):    
 #     # queryset = User.objects.filter()
 #     serializer_class = serizlizers.ForgotPasswordSerializer
@@ -58,7 +58,6 @@ def ForgotPassword(request):
         url = request.data['url']
         email = request.data['email']
         user = User.objects.get(email=email)
-        print(user)
         day = datetime.now()
         subject = "Token for reset password: " + str(day)
         refresh = tokens.RefreshToken.for_user(user) 
@@ -68,7 +67,7 @@ def ForgotPassword(request):
         
         res = {
             'message': msg_res,
-            'access': str(refresh.access_token),
+            # 'access': str(refresh.access_token),
         }
         return response.Response(data=res, status=status.HTTP_200_OK)
     except Exception as e:
@@ -104,8 +103,8 @@ class ChangePasswordView(generics.UpdateAPIView):
         An endpoint for changing password.
         """
         serializer_class = serializers.ChangePasswordSerializer
-        model = User
-        # permission_classes = []
+        # model = User
+        permission_classes = [permissions.AllowAny, permissions.IsAuthenticated]
 
         def get_object(self, queryset=None):
             obj = self.request.user
@@ -136,3 +135,34 @@ class ChangePasswordView(generics.UpdateAPIView):
                 return response.Response(data=res, status=status.HTTP_200_OK)
 
             return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+class ChangePasswordWithTokenView(generics.UpdateAPIView):
+    serializer_class = serializers.ChangePasswordWithToken
+    permission_classes = [permissions.IsAuthenticated]
+    def get_object(self, queryset=None):
+            obj = self.request.user
+            return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # set_password also hashes the password that the user will get
+            self.object.set_password(serializer.data.get("new_password"))
+            
+            self.object.save()
+            refresh = tokens.RefreshToken.for_user(self.object)
+            
+            res = {
+                'message': 'Password updated successfully',
+                'token': {
+                    'access': str(refresh.access_token),
+                    'refresh': str(refresh),
+                }
+            }
+
+            return response.Response(data=res, status=status.HTTP_200_OK)
+
+        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
