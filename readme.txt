@@ -9,13 +9,15 @@ enviroment: {
 }
 
 URL for API: {
-    api/auth/register/
-    api/auth/login/
-    api/auth/logout/
-    api/auth/refresh-token/
-    api/auth/forgot-password/
-    api/auth/change-password/
-    api/auth/change-password-with-token/
+    api/auth/register/                              
+    api/auth/login/                                 
+    api/auth/logout/                                blacklist refresh token
+    api/auth/refresh-token/                         refresh token -> access token
+    api/auth/profile/                               retrieve full profile and update full_name, email
+    api/auth/profile/mode/                          update mode of profile
+    api/auth/forgot-password-send-mail/             send token to mail user
+    api/auth/profile/change-password/               
+    api/auth/change-password-with-token/            frontend set accesstoken in mail pass into header after push new password
 
     api/workspaces/
     api/workspaces/<int:workspaces_id>/
