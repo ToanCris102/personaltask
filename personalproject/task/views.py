@@ -10,7 +10,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from account.permissions import IsOwner
 from workspace.permissions import IsOwnerWorkspace
 
-
+# @access Private: Users with their Token
+# @method POST and GET
+# @desc For create Task and show List Task
 class TaskListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsOwnerWorkspace]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
@@ -35,7 +37,10 @@ class TaskListCreateView(generics.ListCreateAPIView):
         except:
             ValidationError('The workspace dont exist')
         return serializer.save(workspace_id=workspace_temp)
-    
+
+# @access Private: Users with their Token
+# @method GET,PUT,PATCH,DELETE
+# @desc For review detail task OR destroy, update Task data
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerWorkspace, permissions.IsAuthenticated]
     lookup_url_kwarg = 'task_id'

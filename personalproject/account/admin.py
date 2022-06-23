@@ -5,4 +5,4 @@ User = get_user_model()
 # Register your models here.
 
 admin.site.register(models.Profile)
-admin.site.register(models.Theme)
+admin.site.register(models.Themes)

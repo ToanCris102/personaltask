@@ -4,6 +4,11 @@ from . import models
 from . import serializers
 from account.permissions import IsOwner
 from .permissions import IsOwnerWorkspace
+
+
+# @access Private: Users with their Token
+# @method GET, POST
+# @desc For list workspace, and create workspace
 class WorkspaceListCreateView(generics.ListCreateAPIView):    
     permission_classes = [IsOwner, permissions.IsAuthenticated] 
     # can remove IsOwner because line 16
@@ -18,7 +23,10 @@ class WorkspaceListCreateView(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):        
         serializer.save(auth_id=self.request.user)
-    
+
+# @access Private: Users with their Token
+# @method GET,PUT,PATCH,DELETE
+# @desc For review detail OR destroy, update Workspace data
 class WorkspaceDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerWorkspace, IsOwner, permissions.IsAuthenticated]
     # You can remove IsOwnerWorkspace, IsOwner because line 34
