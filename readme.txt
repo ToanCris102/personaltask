@@ -15,9 +15,9 @@ URL for API: {
     api/auth/refresh-token/                         refresh token -> access token
     api/auth/profile/                               retrieve full profile and update full_name, email
     api/auth/profile/mode/                          update mode of profile
-    api/auth/forgot-password-send-mail/             send token to mail user
+    api/auth/forgot-password-send-mail/             send token to user' mail
     api/auth/profile/change-password/               
-    api/auth/change-password-with-token/            frontend set accesstoken in mail pass into header after push new password
+    api/auth/change-password-with-token/            frontend puts the  access token in the mail pass in the header after pushing the new password
 
     api/workspaces/
     api/workspaces/<int:workspaces_id>/
