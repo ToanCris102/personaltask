@@ -157,7 +157,11 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'tttoan0208@gmail.com'
+<<<<<<< HEAD
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+=======
+EMAIL_HOST_PASSWORD = 
+>>>>>>> fe13320d30b14b11eb0d3e642483e86b919cde85
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/' # 'http://myhost:port/media/'
