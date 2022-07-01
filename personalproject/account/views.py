@@ -230,7 +230,7 @@ class UpdateAndDetailProfileView(generics.RetrieveUpdateAPIView):
     
     def get_serializer_class(self):        
         if self.request.method == 'GET':
-            self.serializer_class =  serializers.ProfileReadSerializer
+            self.serializer_class =  serializers.ProfileReadSerializer 
         else:
             self.serializer_class = serializers.UserUpdateSerializer
         return super().get_serializer_class()

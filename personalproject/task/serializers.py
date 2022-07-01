@@ -17,13 +17,14 @@ class TaskOnlyWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Task
         # fields = ['name', 'workspace_id', 'priority_id', 'status_id', 'description', 'due_date ']
-        exclude = ['id', 'created_date', 'created_time', 'status_id', 'workspace_id']
+        exclude = ['id', 'created_date', 'created_time', 'workspace_id']
         extra_kwargs = {
             'name': {'write_only': True},
             'description': {'write_only': True},
             'workspace_id': {'write_only': True},
             'priority_id': {'write_only': True},
             'due_date': {'write_only': True},
+            'status_id': {'write_only': True},
         }    
 
 class TaskOnlyReadSerializer(serializers.ModelSerializer):
