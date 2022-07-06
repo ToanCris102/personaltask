@@ -19,7 +19,7 @@ class TaskListCreateView(generics.ListCreateAPIView):
     search_fields = ['status_id__status_name', 'name', 'priority_id__priority_name']
     filterset_fields = ['status_id']
     def get_queryset(self):        
-        self.queryset = models.Task.objects.filter(workspace_id=self.kwargs['workspace_id'])        
+        self.queryset = models.Task.objects.filter(workspace_id=self.kwargs['workspace_id']).select_related()      
         return super().get_queryset()
 
     def get_serializer_class(self):        
